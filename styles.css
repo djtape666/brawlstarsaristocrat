@@ -101,7 +101,7 @@ input {
     gap: 5px;
 }
 
-.auth #errorMessages {
+.auth .errorMessage {
     align-self: start;
 }
 
@@ -416,4 +416,36 @@ footer img {
     margin-right: 20px;
     width: 30px;
     cursor: pointer;
+}
+
+/*Animations*/
+
+@keyframes slide-left {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-right {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.image img {
+    transition: transform 0.5s ease;
+}
+
+.image.slide-left img {
+    animation: slide-left 0.5s ease forwards;
+}
+
+.image.slide-right img {
+    animation: slide-right 0.5s ease forwards;
 }

@@ -17,13 +17,15 @@
             <h1>Авторизация</h1>
             <form class="auth">
                 <label for="login" >Логин</label>
-                <input type="text" id="login" name="login" pattern="[а-яА-ЯёЁ0-9]{4,10}" required>
+                <input type="text" id="login" name="login">
+                <div class="errorMessage login" style="color: red; margin-top: 5px;"></div>
                 <label for="dob">Дата Рождения:</label>
-                <input type="date" id="dob" name="dob" min="1950-01-01" max="2024-12-19" lang="ru" required>
+                <input type="date" id="dob" name="dob" lang="ru">
+                <div class="errorMessage dob" style="color: red; margin-top: 5px;"></div>
                 <label for="male">Пол:</label>
                 <div class="gender-selection">
                     <div class="male choice">
-                        <input type="radio" id="male" name="gender" value="male" required>
+                        <input type="radio" id="male" name="gender" value="male">
                         <label for="male">Мужской</label>
                     </div>
                     <div class="female choice">
@@ -31,7 +33,7 @@
                         <label for="female">Женский</label><br>
                     </div>
                 </div>
-                <div id="errorMessages" style="color: red; margin-top: 10px;"></div>
+                <div class="errorMessage gender" style="color: red; margin-top: 5px;"></div>
                 <button type="submit" id="auth">Войти</button>
             </form>
         </div>
@@ -99,7 +101,8 @@
                     <button class="left"><</button>
                     <div class="image">
                         <img src="./img/gallery/1.png" alt="слайд 1">
-                        <p>Изображение Галереи Brawl Stars 1/5</p>
+                        <p class="image-description">"баскетбой"</p>
+                        <p class="image-num">Изображение Галереи Brawl Stars 1/5</p>
                     </div>
                     <button class="right"> > </button>
                 </div>

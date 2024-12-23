@@ -12,6 +12,14 @@ const terms = {
     "Скины": "косметические изменения внешнего вида бравлеров. Некоторые доступны только за выполнение специальных задач."
 };
 
+const img_desc = {
+    "1":"баскетбой",
+    "2":"история игрушек",
+    "3":"любимый боец",
+    "4":"крутой боец",
+    "5":"бравл старс"
+}
+
 // Хранение данных пользователя
 let data = {
     "login": "ffff",
@@ -25,7 +33,6 @@ let filter = '';
 // Событие, срабатывающее при загрузке документа
 document.addEventListener('DOMContentLoaded', () => {
     auth(); // Функция авторизации
-    authCheck(); // Проверка данных авторизации
     personalLoad(); // Загрузка личной информации
     exit(); // Настройка выхода
     menuSwitch(); // Переключение между меню
@@ -60,7 +67,7 @@ const exit = () => {
         oldContent?.classList.remove('selected'); // Убираем класс у старого контента
         newContent.classList.add('selected'); // Добавляем класс новому контенту
         document.querySelector("form.auth").reset(); // Сбрасываем форму авторизации
-        document.getElementById('errorMessages').innerHTML = ""; // Очищаем ошибки
+        document.querySelectorAll('.errorMessage').forEach(error => (error.innerHTML = '')); // Очищаем ошибки
     }));
 };
 
@@ -179,45 +186,81 @@ const personalLoad = () => {
     personalBtn.addEventListener('click', () => {
         putInfo(); // Отображаем личную информацию
     });
-}
+};
 
-// Функция проверки авторизации
-const authCheck = () => {
-    document.querySelector("#auth").addEventListener("click", function (event) {
-        const errorMessages = [];
-        const login = document.getElementById('login');
-        const dob = document.getElementById('dob');
-        const gender = document.querySelector('input[name="gender"]:checked');
+// Функция авторизации пользователя
+const auth = () => {
+    document.querySelector('form.auth').addEventListener('submit', (e) => {
+        e.preventDefault(); // Отменяем стандартное поведение формы
 
-        // Проверка поля логина
-        if (!login.value.match(/^[а-яА-ЯёЁ0-9]{4,10}$/)) {
-            errorMessages.push('Логин должен содержать от 4 до 10 символов (только буквы и цифры).');
+        // Проверка формы
+        document.querySelectorAll('.errorMessage').forEach(error => (error.innerHTML = ''));
+
+        const isLoginValid = loginCheck();
+        const isDobValid = dobCheck();
+        const isGenderValid = genderCheck();
+
+        if (!isLoginValid || !isDobValid || !isGenderValid) return;
+
+        //Обработка формы
+        document.querySelector('.auth-page').hidden = true; // Скрываем страницу авторизации
+        document.querySelector('.main-container').hidden = false; // Показываем основное меню
+        document.querySelector('.main-container').style.display = "flex"; // Устанавливаем flex для контейнера
+
+        let form = document.querySelector('form.auth');
+        const formData = new FormData(form);
+
+        // Проходим по данным формы и сохраняем их
+        for (const [key, value] of formData.entries()) {
+            data[key] = value;
         }
-
-        // Проверка даты рождения
-        if (!dob.value) {
-            errorMessages.push('Дата рождения обязательна.');
-        } else {
-            const dobDate = new Date(dob.value);
-            const minDate = new Date('1950-01-01');
-            const maxDate = new Date('2024-12-19');
-            if (dobDate < minDate || dobDate > maxDate) {
-                errorMessages.push('Дата рождения должна быть между 1950-01-01 и 2024-12-19.');
-            }
-        }
-
-        // Проверка выбора пола
-        if (!gender) {
-            errorMessages.push('Выберите пол.');
-        }
-
-        // Отображение сообщений об ошибках
-        const errorContainer = document.getElementById('errorMessages');
-        if (errorMessages.length > 0) {
-            errorContainer.innerHTML = errorMessages.join('<br>');
-        }
+        document.querySelector("header .info .login").innerHTML = data.login; // Обновляем логин
     });
-}
+};
+
+//Проверка логина
+const loginCheck = () => {
+    const login = document.getElementById('login');
+    const errorMessage = document.querySelector('.errorMessage.login');
+    if (!login.value.match(/^[а-яА-ЯёЁ0-9]{4,10}$/)) {
+        errorMessage.innerHTML = 'Логин должен содержать от 4 до 10 символов (только буквы и цифры).';
+        return false;
+    }
+    return true;
+};
+
+
+//Проверка даты рождения
+const dobCheck = () => {
+    const dob = document.getElementById('dob');
+    const errorMessage = document.querySelector('.errorMessage.dob');
+
+    if (!dob.value) {
+        errorMessage.innerHTML = 'Дата рождения обязательна.';
+        return false;
+    } else {
+        const dobDate = new Date(dob.value);
+        const minDate = new Date('1950-01-01');
+        const maxDate = new Date('2024-12-19');
+        if (dobDate < minDate || dobDate > maxDate) {
+            errorMessage.innerHTML = 'Дата рождения должна быть между 1950-01-01 и 2024-12-19.';
+            return false;
+        }
+        return true;
+    }
+};
+
+//Проверка пола
+const genderCheck = () => {
+    const gender = document.querySelector('input[name="gender"]:checked');
+    const errorMessage = document.querySelector('.errorMessage.gender');
+
+    if (!gender) {
+        errorMessage.innerHTML = 'Выберите пол.';
+        return false;
+    }
+    return true;
+};
 
 // Функция отображения личной информации
 const putInfo = () => {
@@ -229,14 +272,16 @@ const putInfo = () => {
 
     loginPlaceholder.innerHTML = "Логин: " + login;
     dobPlaceholder.innerHTML = "Дата рождения: " + dob;
-    genderPlaceholder.innerHTML = "Пол: " + (gender === "female" ? "Ж" : "М");
+    genderPlaceholder.innerHTML = "Пол: " + (gender === "female" ? "Женский" : "Мужской");
     testPlaceholder.innerHTML = test !== "" ? ("Последний результат теста: " + test) : "Тест ещё не был пройден";
 }
 
 // Функция для переключения изображений в галерее
 const switchImage = (order) => {
     const imageContainer = document.querySelector(`.content.gallery img`);
-    const textContainer = document.querySelector(`.content.gallery .image p`);
+    const textContainer = document.querySelector(`.content.gallery .image-num`);
+    const descContainer = document.querySelector(".content.gallery .image-description");
+    const imageWrapper = document.querySelector(".content.gallery .image");
     let image = imageContainer.src.split("gallery/");
     let imageNum = image[1];
     let imageLink = image[0] + "gallery/";
@@ -244,16 +289,31 @@ const switchImage = (order) => {
     switch (order) {
         case 'left':
             imageNum = imageNum - 1; // Переключаем на изображение слева
+            imageWrapper.classList.add('slide-right'); // Добавляем анимацию
             break;
         case 'right':
             imageNum = Number(imageNum) + 1; // Переключаем на изображение справа
+            imageWrapper.classList.add('slide-left'); // Добавляем анимацию
             break;
     }
-    if (imageNum > 5 || imageNum < 1) return; // Проверка границ
+
+    // Проверка границ
+    if (imageNum > 5 || imageNum < 1) {
+        imageWrapper.classList.remove('slide-left', 'slide-right');
+        return;
+    }
+
+    let imageDesc = img_desc[imageNum];
     imageLink += imageNum + ".png";
     imageContainer.src = imageLink; // Обновляем изображение
-    textContainer.innerHTML = `Изображение Галереи Brawl Stars ${imageNum}/5`;
-    imageContainer.alt = `Слайд ${imageNum}`;
+    setTimeout(() => {
+        textContainer.innerHTML = `Изображение Галереи Brawl Stars ${imageNum}/5`;
+        imageContainer.alt = `Слайд ${imageNum}`;
+        descContainer.innerHTML = '"' + imageDesc + '"';
+
+        // Убираем анимацию
+        imageWrapper.classList.remove('slide-left', 'slide-right');
+    }, 500);
 }
 
 // Функция для переключения между содержимым меню
@@ -270,25 +330,6 @@ const menuSwitch = () => {
         });
     });
 };
-
-// Функция авторизации пользователя
-const auth = () => {
-    document.querySelector('form.auth').addEventListener('submit', (e) => {
-        e.preventDefault(); // Отменяем стандартное поведение формы
-        document.querySelector('.auth-page').hidden = true; // Скрываем страницу авторизации
-        document.querySelector('.main-container').hidden = false; // Показываем основное меню
-        document.querySelector('.main-container').style.display = "flex"; // Устанавливаем flex для контейнера
-
-        let form = document.querySelector('form.auth');
-        const formData = new FormData(form);
-
-        // Проходим по данным формы и сохраняем их
-        for (const [key, value] of formData.entries()) {
-            data[key] = value;
-        }
-        document.querySelector("header .info .login").innerHTML = data.login; // Обновляем логин
-    });
-}
 
 // Функция для загрузки данных в словарь
 const dictionaryLoad = () => {
