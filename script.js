@@ -222,7 +222,7 @@ const auth = () => {
 const loginCheck = () => {
     const login = document.getElementById('login');
     const errorMessage = document.querySelector('.errorMessage.login');
-    if (!login.value.match(/^[а-яА-ЯёЁ0-9]{4,10}$/)) {
+    if(!login.validity.valid) {
         errorMessage.innerHTML = 'Логин должен содержать от 4 до 10 символов (только буквы и цифры).';
         return false;
     }
@@ -238,16 +238,11 @@ const dobCheck = () => {
     if (!dob.value) {
         errorMessage.innerHTML = 'Дата рождения обязательна.';
         return false;
-    } else {
-        const dobDate = new Date(dob.value);
-        const minDate = new Date('1950-01-01');
-        const maxDate = new Date('2024-12-19');
-        if (dobDate < minDate || dobDate > maxDate) {
-            errorMessage.innerHTML = 'Дата рождения должна быть между 1950-01-01 и 2024-12-19.';
-            return false;
-        }
-        return true;
+    } else if (!dob.validity.valid) {
+        errorMessage.innerHTML = 'Дата рождения должна быть между 1950-01-01 и 2024-12-19.';
+        return false;
     }
+    return true;
 };
 
 //Проверка пола

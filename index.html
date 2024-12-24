@@ -15,12 +15,12 @@
     <div class="auth-page">
         <div class="auth-container">
             <h1>Авторизация</h1>
-            <form class="auth">
+            <form novalidate class="auth">
                 <label for="login" >Логин</label>
-                <input type="text" id="login" name="login">
+                <input type="text" id="login" name="login" required pattern="[А-Яа-яЁё0-9]{4,10}">
                 <div class="errorMessage login" style="color: red; margin-top: 5px;"></div>
                 <label for="dob">Дата Рождения:</label>
-                <input type="date" id="dob" name="dob" lang="ru">
+                <input type="date" id="dob" name="dob" lang="ru" required min="1950-01-01" max="2024-12-23">
                 <div class="errorMessage dob" style="color: red; margin-top: 5px;"></div>
                 <label for="male">Пол:</label>
                 <div class="gender-selection">
